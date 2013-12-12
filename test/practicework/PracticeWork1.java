@@ -1,0 +1,118 @@
+package practicework;
+
+import static org.hamcrest.core.Is.*;
+import static org.junit.Assert.*;
+
+import java.io.File;
+import java.util.concurrent.TimeUnit;
+
+import org.apache.commons.lang3.SystemUtils;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+
+public class PracticeWork1 {
+    private WebDriver driver;
+    
+    private String chromeDriverPath() {
+        String path;
+        if (SystemUtils.IS_OS_MAC || SystemUtils.IS_OS_MAC_OSX) {
+            path = "chromedriver/mac/chromedriver"; // Mac環境の場合
+        } else {
+            path = "chromedriver/win/chromedriver.exe"; // Windows環境の場合
+        }
+        File file = new File(path);
+        return file.getAbsolutePath();
+    }
+    
+    @Before
+    public void setUp() {
+        System.setProperty("webdriver.chrome.driver", chromeDriverPath());
+        driver = new ChromeDriver();
+        // ページ遷移の際に少し待機するため
+        driver.manage().timeouts().implicitlyWait(500, TimeUnit.MILLISECONDS);
+    }
+    
+    @After
+    public void tearDown() {
+        driver.quit();
+    }
+    
+    @Test
+    public void test() {
+        File html = new File("reserveApp/index.html");
+        String url = "file:///" + html.getAbsolutePath();
+        driver.get(url);
+        
+        // TODO 以下は削除してください
+        try {
+            Thread.sleep(1000);
+         // 1ページ目入力画面
+            
+            // 宿泊日
+            driver.findElement(By.id("reserve_year")).clear();
+            driver.findElement(By.id("reserve_year")).sendKeys("2013");
+            driver.findElement(By.id("reserve_month")).clear();
+            driver.findElement(By.id("reserve_month")).sendKeys("12");
+            driver.findElement(By.id("reserve_day")).clear();
+            driver.findElement(By.id("reserve_day")).sendKeys("7");
+            driver.findElement(By.id("reserve_term")).clear();
+            driver.findElement(By.id("reserve_term")).sendKeys("1");
+            
+            // 人数
+            driver.findElement(By.id("headcount")).clear();
+            driver.findElement(By.id("headcount")).sendKeys("9");
+            
+            // 朝食バイキング
+            driver.findElement(By.id("breakfast_on")).click();
+
+            // プラン
+           	WebElement plan_a = driver.findElement(By.id("plan_a"));
+           	WebElement plan_b = driver.findElement(By.id("plan_b"));
+           	if(!plan_a.isSelected()){
+           		plan_a.click();
+           	}
+           	if(!plan_b.isSelected()){
+           		plan_b.click();
+           	}
+           	
+           	// お名前
+           	driver.findElement(By.id("guestname")).sendKeys("a");
+           	
+           	Thread.sleep(1000);
+           	
+           	// 「次へ」ボタンをクリック
+           	driver.findElement(By.id("goto_next")).click();
+           	
+           	// 2ページ目入力画面
+            assertThat(driver.findElement(By.id("price")).getText(), is("105750"));
+            assertThat(driver.findElement(By.id("datefrom")).getText(), is("2013年12月7日"));
+            assertThat(driver.findElement(By.id("dateto")).getText(), is("2013年12月8日"));
+            assertThat(driver.findElement(By.id("dayscount")).getText(), is("1"));
+            assertThat(driver.findElement(By.id("hc")).getText(), is("9"));
+            assertThat(driver.findElement(By.id("dayscount")).getText(), is("1"));
+            assertThat(driver.findElement(By.id("bf_order")).getText(), is("あり"));
+            assertThat(driver.findElement(By.id("plan_a_order")).getText(), is("昼からチェックインプラン"));
+            assertThat(driver.findElement(By.id("plan_b_order")).getText(), is("お得な観光プラン"));
+            assertThat(driver.findElement(By.id("gname")).getText(), is("a"));
+//            Thread.sleep(2000);
+           	
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+        // TODO ここまで削除してください
+        
+        
+        
+        
+        // TODO 残りの処理を記述してください
+
+        
+
+        // TODO 残りの処理を記述してください
+    }
+}
